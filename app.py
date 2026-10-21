@@ -13,7 +13,12 @@ URL_NANO_SYSTEM = "https://docs.google.com/spreadsheets/d/17yfyJFXQZ7aw9uMSRO1oY
 # إنشاء الاتصال بـ Google Sheets
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-@st.cache_data(ttl=5)
+URL_LAB_SYSTEM = "https://docs.google.com/spreadsheets/d/1S4lxWzPz7e-DmjaLxQ1PIYPzfaZOU7au1x7gu4/edit".strip()
+URL_NANO_SYSTEM = "https://docs.google.com/spreadsheets/d/17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8/edit".strip()
+
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+@st.cache_data(ttl=1)
 def load_data():
     try:
         df_wh = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Warehouse_Stock")
