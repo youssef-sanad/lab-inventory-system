@@ -7,9 +7,8 @@ st.set_page_config(page_title="Advanced Lab & Warehouse Inventory System", layou
 
 # ضع هنا روابط Google Sheets الخاصة بك
 # تنظيف الروابط من أي مسافات إضافية
-URL_LAB_SYSTEM = "https://docs.google.com/spreadsheets/d/1S4lxWzPz7e-DmjaLxQ1MYX01PIYPzfaZOU7au1x7gu4/edit".strip()
-URL_NANO_SYSTEM = "https://docs.google.com/spreadsheets/d/17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8/edit".strip()
-
+URL_LAB_SYSTEM = "https://docs.google.com/spreadsheets/d/1S4lxWzPz7e-DmjaLxQ1PIYPzfaZOU7au1x7gu4"
+URL_NANO_SYSTEM = "https://docs.google.com/spreadsheets/d/17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8"
 # إنشاء الاتصال بـ Google Sheets
 conn = st.connection("gsheets", type=GSheetsConnection)
 
