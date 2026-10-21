@@ -1,36 +1,29 @@
 import streamlit as st
 import pandas as pd
-from streamlit_gsheets import GSheetsConnection
-import datetime
 
-st.set_page_config(page_title="Advanced Lab & Warehouse Inventory System", layout="wide")
+# 1. المعرفات الخاصة بالملفات (Sheet IDs)
+LAB_SHEET_ID = "1S4lxWzPz7e-DmjaLxQ1PIYPzfaZOU7au1x7gu4"
+NANO_SHEET_ID = "17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8"
 
-# ضع هنا روابط Google Sheets الخاصة بك
-# تنظيف الروابط من أي مسافات إضافية
-URL_LAB_SYSTEM = "https://docs.google.com/spreadsheets/d/1S4lxWzPz7e-DmjaLxQ1PIYPzfaZOU7au1x7gu4"
-URL_NANO_SYSTEM = "https://docs.google.com/spreadsheets/d/17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8"
-# إنشاء الاتصال بـ Google Sheets
-conn = st.connection("gsheets", type=GSheetsConnection)
+# دالة لقراءة أي تبويب مباشرة كـ CSV لمنع أخطاء 404
+def read_sheet(sheet_id, sheet_name):
+    url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+    return pd.read_csv(url)
 
-URL_LAB_SYSTEM = "https://docs.google.com/spreadsheets/d/1S4lxWzPz7e-DmjaLxQ1PIYPzfaZOU7au1x7gu4/edit".strip()
-URL_NANO_SYSTEM = "https://docs.google.com/spreadsheets/d/17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8/edit".strip()
-
-conn = st.connection("gsheets", type=GSheetsConnection)
-
-@st.cache_data(ttl=1)
+@st.cache_data(ttl=5)
 def load_data():
     try:
-        df_wh = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Warehouse_Stock")
-        df_lab = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Lab_Inventory")
-        df_usage = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Lab_Usage_Log")
-        df_restock = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Restock_Log")
+        df_wh = read_sheet(LAB_SHEET_ID, "Warehouse_Stock")
+        df_lab = read_sheet(LAB_SHEET_ID, "Lab_Inventory")
+        df_usage = read_sheet(LAB_SHEET_ID, "Lab_Usage_Log")
+        df_restock = read_sheet(LAB_SHEET_ID, "Restock_Log")
         
         df_nano = None
         try:
-            df_nano = conn.read(spreadsheet=URL_NANO_SYSTEM, worksheet="Nano_Inventory")
+            df_nano = read_sheet(NANO_SHEET_ID, "Nano_Inventory")
         except Exception:
             pass
-        
+            
         return df_wh, df_lab, df_usage, df_restock, df_nano
     except Exception as e:
         st.error(f"Error loading Google Sheets: {e}")
