@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
 
-# 1. المعرفات الخاصة بالملفات (Sheet IDs)
+# المعرفات النظيفة المستخرجة من 링크اتك مباشرة
 LAB_SHEET_ID = "1S4lxWzPz7e-DmjaLxQ1PIYPzfaZOU7au1x7gu4"
 NANO_SHEET_ID = "17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8"
 
-# دالة لقراءة أي تبويب مباشرة كـ CSV لمنع أخطاء 404
 def read_sheet(sheet_id, sheet_name):
     url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
     return pd.read_csv(url)
