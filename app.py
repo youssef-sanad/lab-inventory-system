@@ -16,14 +16,14 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 @st.cache_data(ttl=5)
 def load_data():
     try:
-        df_wh = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Warehouse Stock")
-        df_lab = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Lab Inventory")
-        df_usage = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Lab Usage Log")
-        df_restock = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Restock Log")
+        df_wh = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Warehouse_Stock")
+        df_lab = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Lab_Inventory")
+        df_usage = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Lab_Usage_Log")
+        df_restock = conn.read(spreadsheet=URL_LAB_SYSTEM, worksheet="Restock_Log")
         
         df_nano = None
         try:
-            df_nano = conn.read(spreadsheet=URL_NANO_SYSTEM, worksheet="Nano Inventory")
+            df_nano = conn.read(spreadsheet=URL_NANO_SYSTEM, worksheet="Nano_Inventory")
         except Exception:
             pass
         
