@@ -12,7 +12,7 @@ def load_data():
         
         df_nano = None
         try:
-            df_nano = pd.read_csv("رابط_نشر_Nano_Inventory_هنا")
+            df_nano = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRT6pysdV8p1MU8ZVPHE4-_zKu1kCXo65ZICzHfX_fU4rZSEELwYDOZMIcAZtAO7cshvEwx_dhmSpEK/pub?gid=1177993820&single=true&output=csv")
         except Exception:
             pass
             
