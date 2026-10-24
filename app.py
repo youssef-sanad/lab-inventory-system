@@ -3,7 +3,11 @@ import pandas as pd
 import datetime
 from streamlit_gsheets import GSheetsConnection
 
-# إعادة تعريف الاتصال مخصصاً لعمليات الكتابة وتحديث الشيتات
+# تعريف الروابط الأصلية المطلوبة لعمليات الكتابة والتحديث (Submit)
+URL_LAB_SYSTEM = "https://docs.google.com/spreadsheets/d/1S4lxWzPz7e-DmjaLxQ1MYX01PIYPzfaZOU7au1x7gu4/edit?usp=sharing"
+URL_NANO_SYSTEM = "https://docs.google.com/spreadsheets/d/17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8/edit?usp=sharing"
+
+# تعريف الاتصال المخصص للكتابة والتحديث
 conn = st.connection("gsheets", type=GSheetsConnection)
 @st.cache_data(ttl=600)
 def load_data():
