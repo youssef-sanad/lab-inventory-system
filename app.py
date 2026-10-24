@@ -1,15 +1,29 @@
 import streamlit as st
 import pandas as pd
 import datetime
-from streamlit_gsheets import GSheetsConnection
+import requests
+import json
 
-# تعريف الروابط الأصلية المطلوبة لعمليات الكتابة والتحديث (Submit)
-URL_LAB_SYSTEM = "https://docs.google.com/spreadsheets/d/1S4lxWzPz7e-DmjaLxQ1MYX01PIYPzfaZOU7au1x7gu4/edit?usp=sharing"
-URL_NANO_SYSTEM = "https://docs.google.com/spreadsheets/d/17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8/edit?usp=sharing"
+# ضع هنا رابط الـ Web App الذي نسخته من خطوة النشر في الـ Apps Script
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8mKRw52cHbl78Pxa_Tre-RSeonZNEQv9N4gnWlKQ1JKIA7IGZlYkYS-W40xMM-FKuOA/exec"
 
-# تعريف الاتصال المخصص للكتابة والتحديث
-conn = st.connection("gsheets", type=GSheetsConnection)
-@st.cache_data(ttl=600)
+# معرفات الشيتات (للقراءة والكتابة)
+LAB_SHEET_ID = "1S4lxWzPz7e-DmjaLxQ1MYX01PIYPzfaZOU7au1x7gu4"
+NANO_SHEET_ID = "17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8"
+
+# دالة إرسال البيانات للـ Apps Script (الكتابة)
+def append_to_sheet(spreadsheet_id, sheet_name, row_data):
+    payload = {
+        "spreadsheetId": spreadsheetId,
+        "sheetName": sheet_name,
+        "row": row_data
+    }
+    try:
+        response = requests.post(APPS_SCRIPT_URL, json=payload)
+        return response.json()
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+@st.cache_data(ttl=5)
 def load_data():
     try:
         # ضع هنا روابط "النشر على الويب بصيغة CSV" لكل تبويب على حدة
@@ -28,7 +42,7 @@ def load_data():
     except Exception as e:
         st.error(f"Error loading Google Sheets: {e}")
         return None, None, None, None, None
-
+    
 st.title("🧪 Advanced Lab, Nanomaterials & Warehouse Management System")
 st.markdown("---")
 
@@ -123,23 +137,29 @@ if df_lab is not None:
             notes = st.text_input("Experiment / Notes")
             submit = st.form_submit_button("Submit Usage")
 
-            if submit and researcher and chemical and qty > 0:
-                try:
-                    new_entry = pd.DataFrame([{
-                        "Date": datetime.date.today().strftime("%Y-%m-%d"),
-                        "Researcher Name": researcher,
-                        "Chemical Name": chemical,
-                        "Unit": "g/ml",
-                        "Quantity Used (g/ml)": qty,
-                        "Experiment / Notes": notes
-                    }])
-                    updated_usage = pd.concat([df_usage, new_entry], ignore_index=True)
-                    conn.update(spreadsheet=URL_LAB_SYSTEM, worksheet="Lab Usage Log", data=updated_usage)
-                    st.success(f"Successfully recorded {qty} g/ml for {chemical}!")
+if submit and researcher and chemical and qty > 0:
+            try:
+                # ترتيب البيانات ليتطابق مع أعمدة شيت Lab_Usage_Log
+                row_data = [
+                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    researcher,
+                    chemical,
+                    "g/ml",
+                    qty,
+                    notes
+                ]
+                
+                # إرسال البيانات عبر الـ Apps Script
+                result = append_to_sheet(LAB_SHEET_ID, "Lab_Usage_Log", row_data)
+                
+                if result.get("status") == "success":
+                    st.success(f"Successfully recorded {qty} g/ml for {chemical}")
                     st.cache_data.clear()
                     st.rerun()
-                except Exception as e:
-                    st.error(f"Error updating Google Sheet: {e}")
+                else:
+                    st.error(f"Error updating Google Sheet: {result.get('message')}")
+            except Exception as e:
+                st.error(f"Error updating Google Sheet: {e}")
 
     elif menu == "🔄 Quick Restock":
         st.header("🔄 Restock Bottle to Lab & Deduct from Warehouse")
