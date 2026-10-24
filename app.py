@@ -183,25 +183,31 @@ elif menu == "🔄 Quick Restock":
             notes = st.text_input("Notes")
             btn_restock = st.form_submit_button("Confirm Restock & Transfer")
 
-            if btn_restock and staff_name:
-                try:
-                    capacity = df_lab[df_lab["Chemical Name"] == selected_chem]["Bottle Capacity"].values[0] if selected_chem in df_lab["Chemical Name"].values else 500
-                    
-                    new_restock = pd.DataFrame([{
-                        "Restock Date": datetime.date.today().strftime("%Y-%m-%d"),
-                        "Researcher / Staff Name": staff_name,
-                        "Chemical Name": selected_chem,
-                        "Warehouse Source": "Main Warehouse",
-                        "Restocked Weight Added (g/ml)": capacity,
-                        "Notes": f"Restock from warehouse ({wh_option}). Notes: {notes}"
-                    }])
-                    updated_restock = pd.concat([df_restock, new_restock], ignore_index=True)
-                    conn.update(spreadsheet=URL_LAB_SYSTEM, worksheet="Restock Log", data=updated_restock)
-                    st.success(f"Successfully restocked 1 bottle of {selected_chem} ({capacity} g/ml)!")
-                    st.cache_data.clear()
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"Error updating Google Sheet: {e}")
+if btn_restock and staff_name:
+        try:
+            capacity = df_lab[df_lab["Chemical Name"] == selected_chem]["Initial Open Bottle Weight"].values[0]
+            
+            # ترتيب البيانات ليتطابق مع أعمدة شيت إعادة التعبئة (Restock)
+            row_data = [
+                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                staff_name,
+                selected_chem,
+                "Main Warehouse",
+                float(capacity),
+                f"Restock from warehouse ({wh_option})"
+            ]
+            
+            # إرسال البيانات عبر الـ Apps Script (تأكد أن اسم الشيت يطابق اسم شيت إعادة التعبئة لديك، مثل "Restock Log")
+            result = append_to_sheet(LAB_SHEET_ID, "Restock Log", row_data)
+            
+            if result.get("status") == "success":
+                st.success(f"Successfully restocked 1 bottle of {selected_chem}!")
+                st.cache_data.clear()
+                st.rerun()
+            else:
+                st.error(f"Error updating Google Sheet: {result.get('message')}")
+        except Exception as e:
+            st.error(f"Error updating Google Sheet: {e}")
 
 elif menu == "➕ Add New Items":
         st.header("➕ Add New Items to System")
