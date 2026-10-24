@@ -123,43 +123,44 @@ if df_lab is not None:
         st.header("📦 Warehouse Unopened Stock")
         st.dataframe(df_wh, use_container_width=True)
 
-    elif menu == "✏️ Log Usage":
-        st.header("✏️ Record Chemical / Nanomaterial Usage")
-        
-        all_materials = list(df_lab["Chemical Name"].dropna().unique())
-        if df_nano is not None and "Product Name" in df_nano.columns:
-            all_materials += list(df_nano["Product Name"].dropna().unique())
+elif menu == "Log Usage":
+    st.header("📝 Record Chemical / Nanomaterial Usage")
+    
+    all_materials = list(df_lab["Chemical Name"].dropna().unique())
+    if 'df_nano' in locals() and df_nano is not None and "Product Name" in df_nano.columns:
+        all_materials += list(df_nano["Product Name"].dropna().unique())
 
-        with st.form("usage_form"):
-            researcher = st.text_input("Researcher Name")
-            chemical = st.selectbox("Select Material", sorted(list(set(all_materials))))
-            qty = st.number_input("Quantity Used (g or ml)", min_value=0.0, step=0.1)
-            notes = st.text_input("Experiment / Notes")
-            submit = st.form_submit_button("Submit Usage")
+    # 1. إنشاء الفورم (المسافة للداخل هنا طبيعية لأنها داخل الـ with)
+    with st.form("usage_form"):
+        researcher = st.text_input("Researcher Name")
+        chemical = st.selectbox("Select Material", sorted(list(set(all_materials))))
+        qty = st.number_input("Quantity Used (g or mL)", min_value=0.0)
+        notes = st.text_input("Experiment / Notes")
+        submit = st.form_submit_button("Submit Usage")
 
-if submit and researcher and chemical and qty > 0:
-            try:
-                # ترتيب البيانات ليتطابق مع أعمدة شيت Lab_Usage_Log
-                row_data = [
-                    datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    researcher,
-                    chemical,
-                    "g/ml",
-                    qty,
-                    notes
-                ]
-                
-                # إرسال البيانات عبر الـ Apps Script
-                result = append_to_sheet(LAB_SHEET_ID, "Lab_Usage_Log", row_data)
-                
-                if result.get("status") == "success":
-                    st.success(f"Successfully recorded {qty} g/ml for {chemical}")
-                    st.cache_data.clear()
-                    st.rerun()
-                else:
-                    st.error(f"Error updating Google Sheet: {result.get('message')}")
-            except Exception as e:
-                st.error(f"Error updating Google Sheet: {e}")
+    # 2. شرط التحقق يجب أن يكون في نفس مستوى الـ with (خارج الفورم تماماً)
+    if submit and researcher and chemical and qty > 0:
+        try:
+            row_data = [
+                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                researcher,
+                chemical,
+                "g/ml",
+                qty,
+                notes
+            ]
+            
+            # إرسال البيانات عبر الـ Apps Script
+            result = append_to_sheet(LAB_SHEET_ID, "Lab_Usage_Log", row_data)
+            
+            if result.get("status") == "success":
+                st.success(f"Successfully recorded {qty} g/ml for {chemical}")
+                st.cache_data.clear()
+                st.rerun()
+            else:
+                st.error(f"Error updating Google Sheet: {result.get('message')}")
+        except Exception as e:
+            st.error(f"Error updating Google Sheet: {e}")
 
 elif menu == "🔄 Quick Restock":
         st.header("🔄 Restock Bottle to Lab & Deduct from Warehouse")
