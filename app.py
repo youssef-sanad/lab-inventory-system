@@ -161,7 +161,7 @@ if submit and researcher and chemical and qty > 0:
             except Exception as e:
                 st.error(f"Error updating Google Sheet: {e}")
 
-    elif menu == "🔄 Quick Restock":
+elif menu == "🔄 Quick Restock":
         st.header("🔄 Restock Bottle to Lab & Deduct from Warehouse")
         st.info("Select the chemical and corresponding warehouse batch to transfer a bottle to the lab.")
 
