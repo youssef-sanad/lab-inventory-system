@@ -293,7 +293,7 @@ elif menu == "➕ Add New Items":
                     except Exception as e:
                         st.error(f"Error updating Google Sheet: {e}")
 
-    elif menu == "📜 Usage History":
+elif menu == "📜 Usage History":
         st.header("📜 Usage & Restock History Logs")
         
         st.subheader("📋 Lab & Nanomaterial Usage Log")
