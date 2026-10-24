@@ -217,24 +217,32 @@ elif menu == "➕ Add New Items":
                 initial_stock = st.number_input("Unopened Bottles Stock", min_value=1, value=5)
                 submit_wh = st.form_submit_button("Add to Warehouse")
                 
-                if submit_wh and item_id and chem_name:
-                    try:
-                        new_wh = pd.DataFrame([{
-                            "Item ID": item_id,
-                            "Chemical Name": chem_name,
-                            "Company / Grade": company_grade,
-                            "Bottle Size (g/ml)": bottle_size,
-                            "Unopened Bottles Stock": initial_stock
-                        }])
-                        updated_wh = pd.concat([df_wh, new_wh], ignore_index=True)
-                        conn.update(spreadsheet=URL_LAB_SYSTEM, worksheet="Warehouse Stock", data=updated_wh)
-                        st.success(f"Successfully added {chem_name} to Warehouse Stock!")
-                        st.cache_data.clear()
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Error updating Google Sheet: {e}")
+if submit_wh and item_id and chem_name:
+            try:
+                # ترتيب الأعمدة حسب جدول Warehouse Stock
+                row_data = [
+                    item_id,
+                    chem_name,
+                    company_grade,
+                    bottle_size,
+                    initial_stock,
+                    0,             # Restock Log Count
+                    initial_stock, # Available Warehouse Stock
+                    "IN STOCK"     # Warehouse Status
+                ]
+                
+                result = append_to_sheet(LAB_SHEET_ID, "Warehouse Stock", row_data)
+                
+                if result.get("status") == "success":
+                    st.success(f"Successfully added {chem_name} to Warehouse!")
+                    st.cache_data.clear()
+                    st.rerun()
+                else:
+                    st.error(f"Error updating Google Sheet: {result.get('message')}")
+            except Exception as e:
+                st.error(f"Error updating Google Sheet: {e}")
                         
-        elif add_type == "Lab Chemical":
+elif add_type == "Lab Chemical":
             with st.form("add_lab_form"):
                 st.subheader("Add New Chemical to Lab Inventory")
                 chem_id = st.text_input("Chemical ID (e.g. CHEM-300)")
@@ -244,25 +252,31 @@ elif menu == "➕ Add New Items":
                 bottle_capacity = st.number_input("Bottle Capacity (g/ml)", min_value=1.0, value=500.0)
                 submit_lab = st.form_submit_button("Add to Lab Inventory")
                 
-                if submit_lab and chem_id and chem_name:
-                    try:
-                        new_lab = pd.DataFrame([{
-                            "Chemical ID": chem_id,
-                            "Category": category,
-                            "Chemical Name": chem_name,
-                            "Grade": grade,
-                            "Bottle Capacity": bottle_capacity,
-                            "Initial Open Bottle Weight": bottle_capacity
-                        }])
-                        updated_lab = pd.concat([df_lab, new_lab], ignore_index=True)
-                        conn.update(spreadsheet=URL_LAB_SYSTEM, worksheet="Lab Inventory", data=updated_lab)
-                        st.success(f"Successfully added {chem_name} to Lab Inventory!")
-                        st.cache_data.clear()
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Error updating Google Sheet: {e}")
+if submit_lab and chem_id and chem_name:
+            try:
+                # ترتيب الأعمدة حسب جدول Lab Inventory
+                row_data = [
+                    chem_id,
+                    category,
+                    chem_name,
+                    company_grade,
+                    bottle_size,
+                    1,             # Open Bottles Count
+                    bottle_capacity # Initial Open Bottle Weight
+                ]
+                
+                result = append_to_sheet(LAB_SHEET_ID, "Lab Inventory", row_data)
+                
+                if result.get("status") == "success":
+                    st.success(f"Successfully added {chem_name} to Lab Inventory!")
+                    st.cache_data.clear()
+                    st.rerun()
+                else:
+                    st.error(f"Error updating Google Sheet: {result.get('message')}")
+            except Exception as e:
+                st.error(f"Error updating Google Sheet: {e}")
                         
-        elif add_type == "Nanomaterial":
+elif add_type == "Nanomaterial":
             with st.form("add_nano_form"):
                 st.subheader("Add Synthesized / New Nanomaterial")
                 nano_id = st.text_input("ID (e.g. NANO-400)")
@@ -273,26 +287,31 @@ elif menu == "➕ Add New Items":
                 unit = st.text_input("Unit", value="g")
                 submit_nano = st.form_submit_button("Add Nanomaterial")
                 
-                if submit_nano and nano_id and product_name:
-                    try:
-                        new_nano = pd.DataFrame([{
-                            "ID": nano_id,
-                            "Category": category,
-                            "Drawer / Location": drawer,
-                            "Product Name": product_name,
-                            "Full Bottle Size": full_size,
-                            "Starting Stock": full_size,
-                            "Unit": unit,
-                            "Total Used": 0
-                        }])
-                        updated_nano = pd.concat([df_nano, new_nano], ignore_index=True)
-                        conn.update(spreadsheet=URL_NANO_SYSTEM, worksheet="Nano Inventory", data=updated_nano)
-                        st.success(f"Successfully added {product_name} to Nanomaterials Inventory!")
-                        st.cache_data.clear()
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Error updating Google Sheet: {e}")
-
+if submit_nano and nano_id and product_name:
+            try:
+                # ترتيب الأعمدة حسب جدول Nanomaterials Inventory (في شيت Nano System)
+                row_data = [
+                    nano_id,
+                    category,
+                    drawer,
+                    product_name,
+                    full_size,
+                    full_size,  # Starting Stock
+                    unit,
+                    0           # Total Used
+                ]
+                
+                # لاحظ هنا أننا نستخدم NANO_SHEET_ID لأن شيت النانو منفصل
+                result = append_to_sheet(NANO_SHEET_ID, "Nanomaterials Inventory", row_data)
+                
+                if result.get("status") == "success":
+                    st.success(f"Successfully added {product_name} to Nanomaterials Inventory!")
+                    st.cache_data.clear()
+                    st.rerun()
+                else:
+                    st.error(f"Error updating Google Sheet: {result.get('message')}")
+            except Exception as e:
+                st.error(f"Error updating Google Sheet: {e}")
 elif menu == "📜 Usage History":
         st.header("📜 Usage & Restock History Logs")
         
