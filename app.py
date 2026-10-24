@@ -208,40 +208,40 @@ elif menu == "➕ Add New Items":
         
         add_type = st.radio("Select Target Inventory", ["Warehouse Chemical", "Lab Chemical", "Nanomaterial"])
         
-        if add_type == "Warehouse Chemical":
-            with st.form("add_wh_form"):
-                st.subheader("Add New Chemical to Warehouse Stock")
-                item_id = st.text_input("Item ID (e.g. WH-100)")
-                chem_name = st.text_input("Chemical Name")
-                company_grade = st.text_input("Company / Grade (e.g. Loba / AR)")
-                bottle_size = st.number_input("Bottle Size (g/ml)", min_value=1.0, value=500.0)
-                initial_stock = st.number_input("Unopened Bottles Stock", min_value=1, value=5)
-                submit_wh = st.form_submit_button("Add to Warehouse")
-                
-if submit_wh and item_id and chem_name:
-            try:
-                # ترتيب الأعمدة حسب جدول Warehouse Stock
-                row_data = [
-                    item_id,
-                    chem_name,
-                    company_grade,
-                    bottle_size,
-                    initial_stock,
-                    0,             # Restock Log Count
-                    initial_stock, # Available Warehouse Stock
-                    "IN STOCK"     # Warehouse Status
-                ]
-                
-                result = append_to_sheet(LAB_SHEET_ID, "Warehouse Stock", row_data)
-                
-                if result.get("status") == "success":
-                    st.success(f"Successfully added {chem_name} to Warehouse!")
-                    st.cache_data.clear()
-                    st.rerun()
-                else:
-                    st.error(f"Error updating Google Sheet: {result.get('message')}")
-            except Exception as e:
-                st.error(f"Error updating Google Sheet: {e}")
+elif add_type == "Warehouse Chemical":
+    with st.form("add_wh_form"):
+        st.subheader("Add New Chemical to Warehouse Stock")
+        item_id = st.text_input("Item ID (e.g. WH-100)")
+        chem_name = st.text_input("Chemical Name")
+        company_grade = st.text_input("Company / Grade (e.g. Loba ...)")
+        bottle_size = st.number_input("Bottle Size (g/mL)", min_value=0.0)
+        initial_stock = st.number_input("Unopened Bottles Stock", min_value=0)
+        submit_wh = st.form_submit_button("Add to Warehouse")
+
+    # شرط التحقق هنا خارج الـ with تماماً وبدون أي مسافات بادئة في البداية
+    if submit_wh and item_id and chem_name:
+        try:
+            row_data = [
+                item_id,
+                chem_name,
+                company_grade,
+                bottle_size,
+                initial_stock,
+                0,             # Restock Log Count
+                initial_stock, # Available Warehouse Stock
+                "IN STOCK"     # Warehouse Status
+            ]
+            
+            result = append_to_sheet(LAB_SHEET_ID, "Warehouse Stock", row_data)
+            
+            if result.get("status") == "success":
+                st.success(f"Successfully added {chem_name} to Warehouse!")
+                st.cache_data.clear()
+                st.rerun()
+            else:
+                st.error(f"Error updating Google Sheet: {result.get('message')}")
+        except Exception as e:
+            st.error(f"Error updating Google Sheet: {e}")
                         
 elif add_type == "Lab Chemical":
             with st.form("add_lab_form"):
