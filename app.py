@@ -202,7 +202,7 @@ elif menu == "🔄 Quick Restock":
                 except Exception as e:
                     st.error(f"Error updating Google Sheet: {e}")
 
-    elif menu == "➕ Add New Items":
+elif menu == "➕ Add New Items":
         st.header("➕ Add New Items to System")
         
         add_type = st.radio("Select Target Inventory", ["Warehouse Chemical", "Lab Chemical", "Nanomaterial"])
