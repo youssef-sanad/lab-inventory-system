@@ -1,25 +1,18 @@
 import streamlit as st
 import pandas as pd
 
-# المعرفات النظيفة المستخرجة من 링크اتك مباشرة
-LAB_SHEET_ID = "1S4lxWzPz7e-DmjaLxQ1PIYPzfaZOU7au1x7gu4"
-NANO_SHEET_ID = "17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8"
-
-def read_sheet(sheet_id, sheet_name):
-    url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
-    return pd.read_csv(url)
-
 @st.cache_data(ttl=5)
 def load_data():
     try:
-        df_wh = read_sheet(LAB_SHEET_ID, "Warehouse_Stock")
-        df_lab = read_sheet(LAB_SHEET_ID, "Lab_Inventory")
-        df_usage = read_sheet(LAB_SHEET_ID, "Lab_Usage_Log")
-        df_restock = read_sheet(LAB_SHEET_ID, "Restock_Log")
+        # ضع هنا روابط "النشر على الويب بصيغة CSV" لكل تبويب على حدة
+        df_wh = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRa0Zxuw3C1fv_PVi0dV7nwaO2Zz22hXqTDRC4VM1PzPTW3SZVoXdhv1P5TvIZK7V-yDsh-gVDIFE-v/pub?gid=1870539181&single=true&output=csv")
+        df_lab = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRa0Zxuw3C1fv_PVi0dV7nwaO2Zz22hXqTDRC4VM1PzPTW3SZVoXdhv1P5TvIZK7V-yDsh-gVDIFE-v/pub?gid=2041709056&single=true&output=csv")
+        df_usage = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRa0Zxuw3C1fv_PVi0dV7nwaO2Zz22hXqTDRC4VM1PzPTW3SZVoXdhv1P5TvIZK7V-yDsh-gVDIFE-v/pub?gid=795100404&single=true&output=csv")
+        df_restock = pd.read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRa0Zxuw3C1fv_PVi0dV7nwaO2Zz22hXqTDRC4VM1PzPTW3SZVoXdhv1P5TvIZK7V-yDsh-gVDIFE-v/pub?gid=1837567229&single=true&output=csv")
         
         df_nano = None
         try:
-            df_nano = read_sheet(NANO_SHEET_ID, "Nano_Inventory")
+            df_nano = pd.read_csv("رابط_نشر_Nano_Inventory_هنا")
         except Exception:
             pass
             
