@@ -14,7 +14,7 @@ NANO_SHEET_ID = "17yfyJFXQZ7aw9uMSRO1oYbIIl_LQMHGYDHrf2Eqnho8"
 # دالة إرسال البيانات للـ Apps Script (الكتابة)
 def append_to_sheet(spreadsheet_id, sheet_name, row_data):
     payload = {
-        "spreadsheetId": spreadsheetId,
+        "spreadsheetId": spreadsheet_id,
         "sheetName": sheet_name,
         "row": row_data
     }
