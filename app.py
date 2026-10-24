@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-@st.cache_data(ttl=5)
+@st.cache_data(ttl=600)
 def load_data():
     try:
         # ضع هنا روابط "النشر على الويب بصيغة CSV" لكل تبويب على حدة
